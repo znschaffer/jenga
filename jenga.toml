@@ -1,0 +1,8 @@
+# path to source files
+SourceFiles = "../blog/src"
+
+# path to build destination
+Destination = "../blog/build"
+
+# path to template.html
+Template = "../blog/template.html"

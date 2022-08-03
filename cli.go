@@ -4,87 +4,104 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
-	"log"
 	"os"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
 )
 
+// config represents a toml file used to configure jenga
 type config struct {
-	Input        string
-	Output       string
-	TemplatePath string
+	InputDirPath  string
+	OutputDirPath string
+	TemplatePath  string
 }
 
-func getTemplate(path string) (*template.Template, error) {
-	temp, err := template.ParseFiles(path)
-	if err != nil {
-		return nil, fmt.Errorf("can't parse template files: %v", err)
-	}
-
-	return temp, nil
-}
-
-func run() {
-
+func run() error {
 	configPath := flag.String("config", "jenga.toml", "/path/to/jenga.toml")
-
 	flag.Parse()
 
-	cfg, err := parseConfig(*configPath)
+	cfg, err := getConfig(*configPath)
 	if err != nil {
-		log.Fatalf("can't read config: %v", err)
+		return fmt.Errorf("failed to get config (%q) %w", *configPath, err)
 	}
 
-	files, err := parseInput(cfg.Input)
-
+	inputFilePaths, err := getInputFilePaths(cfg.InputDirPath)
 	if err != nil {
-		log.Fatalf("can't get content folders: %v", err)
+		return fmt.Errorf("failed to get input file paths (%q) %w", cfg.InputDirPath, err)
 	}
 
 	template, err := getTemplate(cfg.TemplatePath)
 	if err != nil {
-		log.Fatalf("can't get template: %v", err)
+		return fmt.Errorf("failed to get template (%q) %w", cfg.TemplatePath, err)
 	}
 
-	gen := &generator{files: files, output: cfg.Output, template: template}
-
-	if err := gen.generate(); err != nil {
-		log.Fatalf("can't generate files: %v", err)
+	g := &builder{
+		inputFilePaths: inputFilePaths,
+		outputDirPath:  cfg.OutputDirPath,
+		template:       template,
+	}
+	if err := g.build(); err != nil {
+		return fmt.Errorf("failed to build files %w", err)
 	}
 
-	fmt.Println("done generating!")
+	return nil
 }
 
-func parseInput(path string) ([]string, error) {
-	var result []string
-	dir, err := os.Open(path)
+// getTemplate returns a pointer to a parsed Template from templatePath
+func getTemplate(templatePath string) (*template.Template, error) {
+	t, err := template.ParseFiles(templatePath)
 	if err != nil {
-		return nil, fmt.Errorf("can't open path %s: %v", path, err)
+		return nil, fmt.Errorf("failed to parse template (%q) %w", templatePath, err)
 	}
 
-	defer dir.Close()
+	return t, nil
+}
 
-	files, err := dir.Readdir(-1)
+// getInputFilePaths returns file paths to every .md in input directory
+func getInputFilePaths(inputDirPath string) ([]string, error) {
+	var inputFilePaths []string
+
+	inputDir, err := os.Open(inputDirPath)
 	if err != nil {
-		return nil, fmt.Errorf("%v", err)
+		return nil, fmt.Errorf("failed to open %q %w", inputDirPath, err)
 	}
 
-	for _, file := range files {
+	defer inputDir.Close()
+
+	inputFiles, err := inputDir.Readdir(-1)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read inputDir %w", err)
+	}
+
+	for _, file := range inputFiles {
 		if !file.IsDir() && file.Name()[0] != '.' {
-			result = append(result, filepath.Join(path, file.Name()))
+			inputFilePaths = append(inputFilePaths, filepath.Join(inputDirPath, file.Name()))
 		}
 	}
 
-	return result, nil
+	return inputFilePaths, nil
 }
 
-func parseConfig(path string) (*config, error) {
+// getConfig decodes a toml file at variable path, returning a config struct
+func getConfig(path string) (*config, error) {
 	cfg := config{}
+
 	_, err := toml.DecodeFile(path, &cfg)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse config: %v", err)
+		return nil, fmt.Errorf("failed to decode toml config %w", err)
+	}
+
+	if cfg.InputDirPath == "" {
+		return nil, fmt.Errorf("failed to find InputDirPath in config")
+	}
+
+	if cfg.OutputDirPath == "" {
+		return nil, fmt.Errorf("failed to find OutputDirPath in config")
+	}
+
+	if cfg.TemplatePath == "" {
+		return nil, fmt.Errorf("failed to find TemplatePath in config")
 	}
 
 	return &cfg, nil

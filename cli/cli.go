@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,8 +12,13 @@ import (
 )
 
 func Run() {
-	// TODO: Read Config
-	cfg, err := readConfig()
+	file, err := os.Open("/Users/zane/.config/jenga.toml")
+	if err != nil {
+		log.Fatalf("can't open config file: %v", err)
+	}
+
+	cfg, err := readConfig(file)
+	fmt.Println(cfg)
 
 	if err != nil {
 		log.Fatalf("can't read config: %v", err)
@@ -44,8 +48,9 @@ func getContentFolders(path string) ([]string, error) {
 	var result []string
 	dir, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("%v", err)
+		return nil, fmt.Errorf("can't open path %s: %v", path, err)
 	}
+
 	defer dir.Close()
 
 	files, err := dir.Readdir(-1)
@@ -62,18 +67,16 @@ func getContentFolders(path string) ([]string, error) {
 	return result, nil
 }
 
-func readConfig() (*config.Config, error) {
-	configDir := "/Users/zane/.config"
-
-	configPath := filepath.Join(configDir, "jenga.toml")
-
-	data, err := ioutil.ReadFile(configPath)
+func readConfig(file *os.File) (*config.Config, error) {
+	var data []byte
+	_, err := file.Read(data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config: %s", err)
 	}
 
-	cfg := config.Config{}
+	defer file.Close()
 
+	cfg := config.Config{}
 	if err := toml.Unmarshal(data, &cfg); err != nil {
 		return nil, fmt.Errorf("failed to parse config: %v", err)
 	}

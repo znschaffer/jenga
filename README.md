@@ -1,4 +1,7 @@
 # Jenga
+![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg)
+
+
 
 A tool for building static single page blogs in Go.
 

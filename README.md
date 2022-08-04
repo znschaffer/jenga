@@ -1,3 +1,5 @@
+<img align="right" width="250px" src="https://github.com/zschaffer/jenga/blob/a8cbfd372c352d78b7ac91d7b6e439d379d995cb/jenga.png">
+
 # Jenga
 ![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg)
 
@@ -95,3 +97,9 @@ Other than that, Jenga currently relies on:
 - [gomarkdown's markdown](https://github.com/gomarkdown/markdown.git)
 
 Shoutout to them because otherwise this would've been a lot trickier.
+
+## Credits
+
+Jenga Logo by [Xinrui Chen](https://github.com/xynree)
+
+Original Go gopher eyes were. designed by [Renee French](https://reneefrench.blogspot.com/)

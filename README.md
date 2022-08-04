@@ -1,7 +1,9 @@
 <img align="right" width="250px" src="https://github.com/zschaffer/jenga/blob/a8cbfd372c352d78b7ac91d7b6e439d379d995cb/jenga.png">
 
 # Jenga
-![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg)
+[![Go Reference](https://pkg.go.dev/badge/github.com/zschaffer/jenga.svg)](https://pkg.go.dev/github.com/zschaffer/jenga)
+![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg) 
+![Go Report Card](https://goreportcard.com/badge/github.com/zschaffer/jenga)](https://goreportcard.com/report/github.com/zschaffer/jenga)
 
 
 

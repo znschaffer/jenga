@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"html/template"
@@ -93,15 +94,15 @@ func getConfig(path string) (*config, error) {
 	}
 
 	if cfg.InputDirPath == "" {
-		return nil, fmt.Errorf("failed to find InputDirPath in config")
+		return nil, errors.New("failed to find InputDirPath in config")
 	}
 
 	if cfg.OutputDirPath == "" {
-		return nil, fmt.Errorf("failed to find OutputDirPath in config")
+		return nil, errors.New("failed to find OutputDirPath in config")
 	}
 
 	if cfg.TemplatePath == "" {
-		return nil, fmt.Errorf("failed to find TemplatePath in config")
+		return nil, errors.New("failed to find TemplatePath in config")
 	}
 
 	return &cfg, nil

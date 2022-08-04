@@ -3,11 +3,11 @@
 # Jenga
 [![Go Reference](https://pkg.go.dev/badge/github.com/zschaffer/jenga.svg)](https://pkg.go.dev/github.com/zschaffer/jenga)
 ![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg) 
-![Go Report Card](https://goreportcard.com/badge/github.com/zschaffer/jenga)](https://goreportcard.com/report/github.com/zschaffer/jenga)
+[![Go Report Card](https://goreportcard.com/badge/github.com/zschaffer/jenga)](https://goreportcard.com/report/github.com/zschaffer/jenga)
 
 
 
-A tool for building static single page blogs in Go.
+A tool for building static single page blogs in [Go](https://golang.org/).
 
 ## Details
 

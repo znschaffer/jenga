@@ -56,33 +56,10 @@ func run() error {
 		return fmt.Errorf("failed to get template (%q) %w", cfg.TemplatePath, err)
 	}
 
-	g := &builder{
+	b := &builder{
 		inputFilePaths: inputFilePaths,
 		outputDirPath:  cfg.OutputDirPath,
 		template:       template,
-	}
-
-	if *dev {
-		c := make(chan notify.EventInfo, 1)
-		if err := notify.Watch(cfg.InputDirPath, c, notify.Write, notify.Remove); err != nil {
-			log.Fatal(err)
-		}
-		defer notify.Stop(c)
-
-		fmt.Printf("watching %q for changes\n", cfg.InputDirPath)
-
-		go func() {
-			srv := http.FileServer(http.Dir(cfg.OutputDirPath))
-			http.ListenAndServe(":3000", srv)
-			fmt.Println("listening on http://localhost:3000")
-		}()
-
-		// use trigger from notify to reload the ListenAndServe
-		for range c {
-			if err := g.build(); err != nil {
-				return fmt.Errorf("failed to build files %w", err)
-			}
-		}
 	}
 
 	fmt.Printf("\033[0;34mconfig\033[0m   = %q\n", *configPath)
@@ -90,8 +67,42 @@ func run() error {
 	fmt.Printf("\033[0;34minput\033[0m    = %q\n", cfg.InputDirPath)
 	fmt.Printf("\033[0;34moutput\033[0m   = %q\n", cfg.OutputDirPath)
 
-	if err := g.build(); err != nil {
-		return fmt.Errorf("failed to build files %w", err)
+	if *dev {
+		if err := watch(b, cfg); err != nil {
+			return fmt.Errorf("failed to watch files: %w", err)
+		}
+	}
+
+	if err := b.build(); err != nil {
+		return fmt.Errorf("failed to build files: %w", err)
+	}
+
+	return nil
+}
+
+func watch(b *builder, cfg *config) error {
+	c := make(chan notify.EventInfo, 1)
+	if err := notify.Watch(cfg.InputDirPath, c, notify.Write, notify.Remove); err != nil {
+		log.Fatal(err)
+	}
+	defer notify.Stop(c)
+
+	srv := http.FileServer(http.Dir(cfg.OutputDirPath))
+	go http.ListenAndServe(":3000", srv)
+
+	fmt.Println()
+	fmt.Println("listening @ \033[0;34mhttp://localhost:3000\033[0m")
+	fmt.Println()
+	fmt.Println("watching \033[0;34minput\033[0m for changes...")
+
+	if err := b.build(); err != nil {
+		return fmt.Errorf("failed to build files: %w", err)
+	}
+
+	for range c {
+		if err := b.build(); err != nil {
+			return fmt.Errorf("failed to build files: %w", err)
+		}
 	}
 
 	return nil

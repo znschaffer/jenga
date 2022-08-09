@@ -37,7 +37,6 @@ func (b *builder) build() error {
 	var inputData []template.HTML
 	temporaryMap := make(map[string]template.HTML)
 	g := new(errgroup.Group)
-
 	for _, inputFilePath := range b.inputFilePaths {
 		path := inputFilePath
 		g.Go(func() error {
@@ -58,7 +57,6 @@ func (b *builder) build() error {
 
 	}
 
-	fmt.Printf("building files to %s\n", b.outputDirPath)
 	if err := writeOutputFile(inputData, b.outputDirPath, b.template); err != nil {
 		return fmt.Errorf("failed to write to output file: %w", err)
 	}

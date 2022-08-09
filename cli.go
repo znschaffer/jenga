@@ -19,8 +19,10 @@ type config struct {
 }
 
 func run() error {
-	configPath := flag.String("config", "jenga.toml", "/path/to/jenga.toml")
+	configPath := flag.String("config", "./jenga.toml", "/path/to/jenga.toml")
 	flag.Parse()
+
+	fmt.Printf("~ using config at %q\n", *configPath)
 
 	cfg, err := getConfig(*configPath)
 	if err != nil {
@@ -42,6 +44,11 @@ func run() error {
 		outputDirPath:  cfg.OutputDirPath,
 		template:       template,
 	}
+
+	fmt.Printf("~ using template from %q\n", cfg.TemplatePath)
+	fmt.Printf("~ using source files from %q\n", cfg.InputDirPath)
+	fmt.Printf("~ building 'index.html' in %q\n", cfg.OutputDirPath)
+
 	if err := g.build(); err != nil {
 		return fmt.Errorf("failed to build files %w", err)
 	}

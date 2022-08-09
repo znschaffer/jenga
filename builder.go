@@ -65,6 +65,7 @@ func (b *builder) build() error {
 
 // writeOutputFile creates an index.html file at outputDirPath using a template filled with inputData
 func writeOutputFile(inputData []template.HTML, outputDirPath string, t *template.Template) error {
+	fmt.Println("\033[0;34m[2/2]\033[0m generating index.html")
 	filePath := filepath.Join(outputDirPath, "index.html")
 	file, err := os.Create(filePath)
 	if err != nil {

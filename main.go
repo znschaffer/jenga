@@ -18,9 +18,9 @@ import (
 )
 
 func main() {
+	fmt.Println()
 	if err := run(); err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("finished building!")
+	fmt.Println()
 }

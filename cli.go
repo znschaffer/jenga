@@ -41,8 +41,6 @@ func run() error {
 		os.Exit(0)
 	}
 
-	fmt.Printf("~ using config at %q\n", *configPath)
-
 	cfg, err := getConfig(*configPath)
 	if err != nil {
 		return fmt.Errorf("failed to get config (%q) %w", *configPath, err)
@@ -87,9 +85,10 @@ func run() error {
 		}
 	}
 
-	fmt.Printf("~ using template from %q\n", cfg.TemplatePath)
-	fmt.Printf("~ using source files from %q\n", cfg.InputDirPath)
-	fmt.Printf("~ building 'index.html' in %q\n", cfg.OutputDirPath)
+	fmt.Printf("\033[0;34mconfig\033[0m   = %q\n", *configPath)
+	fmt.Printf("\033[0;34mtemplate\033[0m = %q\n", cfg.TemplatePath)
+	fmt.Printf("\033[0;34minput\033[0m    = %q\n", cfg.InputDirPath)
+	fmt.Printf("\033[0;34moutput\033[0m   = %q\n", cfg.OutputDirPath)
 
 	if err := g.build(); err != nil {
 		return fmt.Errorf("failed to build files %w", err)

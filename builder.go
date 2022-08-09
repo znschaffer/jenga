@@ -9,6 +9,7 @@ import (
 
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/parser"
+	"golang.org/x/sync/errgroup"
 )
 
 type builder struct {
@@ -24,7 +25,7 @@ func readFile(filePath string) (template.HTML, error) {
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return template.HTML(""), fmt.Errorf("error while reading file %v: %v", filePath, err)
+		return template.HTML(""), fmt.Errorf("error while reading file %s: %w", filePath, err)
 	}
 
 	html := markdown.ToHTML(data, parser, nil)
@@ -32,25 +33,34 @@ func readFile(filePath string) (template.HTML, error) {
 }
 
 // build reads all the files in the inputFilePaths slice, then passes them to writeOutputFile to build an index.html
-func (g *builder) build() error {
+func (b *builder) build() error {
 	var inputData []template.HTML
+	temporaryMap := make(map[string]template.HTML)
+	g := new(errgroup.Group)
 
-	for _, inputFilePath := range g.inputFilePaths {
-		inputFileData, err := readFile(inputFilePath)
-		if err != nil {
+	for _, inputFilePath := range b.inputFilePaths {
+		path := inputFilePath
+		g.Go(func() error {
+			data, err := readFile(path)
+			if err == nil {
+				temporaryMap[path] = data
+			}
 			return err
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return err
+	} else {
+		for _, inputFilePath := range b.inputFilePaths {
+			inputData = append([]template.HTML{temporaryMap[inputFilePath]}, inputData...)
 		}
-		inputData = append(inputData, inputFileData)
+
 	}
 
-	for i, j := 0, len(inputData)-1; i < j; i, j = i+1, j-1 {
-		inputData[i], inputData[j] = inputData[j], inputData[i]
-	}
-
-	fmt.Println("~ building ~")
-
-	if err := writeOutputFile(inputData, g.outputDirPath, g.template); err != nil {
-		return fmt.Errorf("failed to write to output file: %v", err)
+	fmt.Printf("building files to %s\n", b.outputDirPath)
+	if err := writeOutputFile(inputData, b.outputDirPath, b.template); err != nil {
+		return fmt.Errorf("failed to write to output file: %w", err)
 	}
 	return nil
 }
@@ -69,9 +79,8 @@ func writeOutputFile(inputData []template.HTML, outputDirPath string, t *templat
 
 	defer writer.Flush()
 
-	fmt.Println(inputData)
 	if err := t.Execute(writer, inputData); err != nil {
-		return fmt.Errorf("error executing template: %v", err)
+		return fmt.Errorf("error executing template: %w", err)
 	}
 
 	return nil

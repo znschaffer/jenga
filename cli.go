@@ -5,10 +5,13 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+	"github.com/rjeczalik/notify"
 )
 
 // config represents a toml file used to configure jenga
@@ -18,9 +21,25 @@ type config struct {
 	TemplatePath  string
 }
 
+const AppVersion = "v0.1.1"
+
 func run() error {
-	configPath := flag.String("config", "./jenga.toml", "/path/to/jenga.toml")
+	version := flag.Bool("v", false, "prints current jenga version")
+	dev := flag.Bool("dev", false, "watchs source folder and rebuilds on changes")
+	configPath := flag.String("config", "./jenga.toml", "path to jenga.toml config")
 	flag.Parse()
+
+	args := flag.Args()
+	if len(args) != 0 {
+		fmt.Printf("unknown arguments: %v\n", args)
+		fmt.Println("use jenga -h for accepted arguments")
+		os.Exit(1)
+	}
+
+	if *version {
+		fmt.Println(AppVersion)
+		os.Exit(0)
+	}
 
 	fmt.Printf("~ using config at %q\n", *configPath)
 
@@ -43,6 +62,29 @@ func run() error {
 		inputFilePaths: inputFilePaths,
 		outputDirPath:  cfg.OutputDirPath,
 		template:       template,
+	}
+
+	if *dev {
+		c := make(chan notify.EventInfo, 1)
+		if err := notify.Watch(cfg.InputDirPath, c, notify.Write, notify.Remove); err != nil {
+			log.Fatal(err)
+		}
+		defer notify.Stop(c)
+
+		fmt.Printf("watching %q for changes\n", cfg.InputDirPath)
+
+		go func() {
+			srv := http.FileServer(http.Dir(cfg.OutputDirPath))
+			http.ListenAndServe(":3000", srv)
+			fmt.Println("listening on http://localhost:3000")
+		}()
+
+		// use trigger from notify to reload the ListenAndServe
+		for range c {
+			if err := g.build(); err != nil {
+				return fmt.Errorf("failed to build files %w", err)
+			}
+		}
 	}
 
 	fmt.Printf("~ using template from %q\n", cfg.TemplatePath)

@@ -13,14 +13,11 @@ in the current directory
 package main
 
 import (
-	"fmt"
 	"log"
 )
 
 func main() {
-	fmt.Println()
 	if err := run(); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println()
 }

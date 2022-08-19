@@ -1,5 +1,7 @@
 github.com/BurntSushi/toml v1.2.0 h1:Rt8g24XnyGTyglgET/PRUNlrUeu9F5L+7FilkXfZgs0=
 github.com/BurntSushi/toml v1.2.0/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
+github.com/bluele/adblock v0.0.0-20150928111208-97547036a6ec h1:bDC3KtBzO9PhiPl+SYkMnwgzMc4YjfQDnz1nmMX4Tlo=
+github.com/bluele/adblock v0.0.0-20150928111208-97547036a6ec/go.mod h1:KpJbk0iUmfxhUj4NXBLYjg6E5RCApkovVJ+SPY/hcaA=
 github.com/gomarkdown/markdown v0.0.0-20220731190611-dcdaee8e7a53 h1:JguE3sS3yLzLiCTCnsmzVFuTvTMDJALbzCgurwY5G/0=
 github.com/gomarkdown/markdown v0.0.0-20220731190611-dcdaee8e7a53/go.mod h1:JDGcbDT52eL4fju3sZ4TeHGsQwhG9nbDV21aMyhwPoA=
 github.com/rjeczalik/notify v0.9.2 h1:MiTWrPj55mNDHEiIX5YUSKefw/+lCQVoAFmD6oQm5w8=

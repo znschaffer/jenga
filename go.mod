@@ -9,4 +9,7 @@ require (
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
 )
 
-require golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664 // indirect
+require (
+	github.com/bluele/adblock v0.0.0-20150928111208-97547036a6ec // indirect
+	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664 // indirect
+)

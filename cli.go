@@ -45,7 +45,6 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("failed to get config (%q) %w", *configPath, err)
 	}
-
 	inputFilePaths, err := getInputFilePaths(cfg.InputDirPath)
 	if err != nil {
 		return fmt.Errorf("failed to get input file paths (%q) %w", cfg.InputDirPath, err)
@@ -118,7 +117,7 @@ func getTemplate(templatePath string) (*template.Template, error) {
 	return t, nil
 }
 
-// getInputFilePaths returns file paths to every .md in input directory
+// getInputFilePaths returns file paths to every .md in input directory in reverse alphabetical order
 func getInputFilePaths(inputDirPath string) ([]string, error) {
 	var inputFilePaths []string
 
@@ -129,9 +128,13 @@ func getInputFilePaths(inputDirPath string) ([]string, error) {
 
 	defer inputDir.Close()
 
-	inputFiles, err := inputDir.Readdir(-1)
+	inputFiles, err := inputDir.ReadDir(-1)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read inputDir %w", err)
+	}
+
+	if len(inputFiles) == 0 {
+		return nil, errors.New("inputDirPath is empty")
 	}
 
 	for _, file := range inputFiles {

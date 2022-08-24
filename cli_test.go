@@ -7,18 +7,20 @@ import (
 )
 
 func TestRun(t *testing.T) {
+	// TODO
 }
 
 func TestParseInput(t *testing.T) {
+	// TODO
 }
 
 func TestGetTemplate(t *testing.T) {
-	got, err := getTemplate("./testdata/template.html")
+	got, err := getTemplate("./testdata/jenga.tmpl")
 	if err != nil {
 		t.Errorf("failed to get template: %v", err)
 	}
 
-	want, _ := template.ParseFiles("./testdata/template.html")
+	want, _ := template.ParseFiles("./testdata/jenga.tmpl")
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
@@ -70,7 +72,7 @@ func TestGetConfig(t *testing.T) {
 		want := &config{
 			InputDirPath:  "./src",
 			OutputDirPath: "./build",
-			TemplatePath:  "./template.html",
+			TemplatePath:  "./jenga.tmpl",
 		}
 
 		if !reflect.DeepEqual(got, want) {

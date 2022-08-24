@@ -2,4 +2,4 @@ inputDirPath = "./src"
 
 outputDirPath = "./build"
 
-templatePath = "./template.html"
+templatePath = "./jenga.tmpl"

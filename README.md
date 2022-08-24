@@ -1,11 +1,10 @@
 <img align="right" width="250px" src="https://github.com/zschaffer/jenga/blob/a8cbfd372c352d78b7ac91d7b6e439d379d995cb/jenga.png">
 
 # Jenga
+
 [![Go Reference](https://pkg.go.dev/badge/github.com/zschaffer/jenga.svg)](https://pkg.go.dev/github.com/zschaffer/jenga)
-![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg) 
+![build](https://github.com/zschaffer/jenga/actions/workflows/go.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/zschaffer/jenga)](https://goreportcard.com/report/github.com/zschaffer/jenga)
-
-
 
 A tool for building static single page blogs in [Go](https://golang.org/).
 
@@ -37,13 +36,13 @@ go install
 
 Jenga has some basic setting up in order to get going; sort of like the real game!
 
-### Set up your own `template.html` or copy it from the releases tab
+### Set up your own `jenga.tmpl` or copy it from the releases tab
 
-Jenga uses Go's [`html/template`](https://pkg.go.dev/html/template) library for template construction. Read their [doc's](https://pkg.go.dev/html/template) for more information on how to manipulate your data. The basic thing required in your `template.html` is a `{{.}}` block to render the data converted from your `.md` files.
+Jenga uses Go's [`html/template`](https://pkg.go.dev/html/template) library for template construction. Read their [doc's](https://pkg.go.dev/html/template) for more information on how to manipulate your data. The basic thing required in your `jenga.tmpl` is a `{{.}}` block to render the data converted from your `.md` files.
 
-The included template.html file looks something like this:
+The included `jenga.tmpl` file looks something like this:
 
-```html
+```tmpl
 <body>
   <!-- Wrap everything in a div -->
   <div>

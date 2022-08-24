@@ -1,5 +1,6 @@
 package main
 
+// TODO: add documentation to all functions
 import (
 	"errors"
 	"flag"
@@ -16,9 +17,9 @@ import (
 
 // config represents a toml file used to configure jenga
 type config struct {
-	InputDirPath  string
-	OutputDirPath string
-	TemplatePath  string
+	InputDirPath  string // path to a directory of markdown files to be consumed by jenga
+	OutputDirPath string // path to output directory of html files
+	TemplatePath  string // path to go-styled template.html
 }
 
 const AppVersion = "v0.1.1"
@@ -45,6 +46,7 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("failed to get config (%q) %w", *configPath, err)
 	}
+
 	inputFilePaths, err := getInputFilePaths(cfg.InputDirPath)
 	if err != nil {
 		return fmt.Errorf("failed to get input file paths (%q) %w", cfg.InputDirPath, err)
@@ -61,6 +63,7 @@ func run() error {
 		template:       template,
 	}
 
+	// Print out Jenga status
 	fmt.Printf("\033[0;34mconfig\033[0m   = %q\n", *configPath)
 	fmt.Printf("\033[0;34mtemplate\033[0m = %q\n", cfg.TemplatePath)
 	fmt.Printf("\033[0;34minput\033[0m    = %q\n", cfg.InputDirPath)

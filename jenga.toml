@@ -2,4 +2,4 @@ InputDirPath =  "../blog/src"
 
 OutputDirPath = "../blog/build"
 
-TemplatePath = "../blog/template.html"
+TemplatePath = "../blog/jenga.tmpl"
